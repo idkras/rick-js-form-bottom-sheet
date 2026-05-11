@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>RickForm · static widget harness</title>
+    <style>
+      html, body { margin: 0; padding: 0; background: #0f0f12; color: #f3f3f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+      .shell { min-height: 100vh; padding: 32px 20px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+      .shell h1 { margin: 8px 0; }
+      .shell p { color: #9ca3af; max-width: 520px; text-align: center; line-height: 1.5; }
+      .cta { background: #5b6cff; color: white; border: none; border-radius: 10px; padding: 12px 22px; font-size: 16px; font-weight: 600; cursor: pointer; }
+      .cta:hover { background: #4854d6; }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <h1>RickForm static harness</h1>
+      <p>Loads <code>public/rick-form.js</code> (built by <code>npm run build</code>) and calls <code>window.RickForm.open({...})</code>. Mirrors how the AppCraft <code>add_code</code> rule will run on a client site.</p>
+      <button class="cta" id="open-btn">Open typhoon contact form</button>
+    </div>
+    <script src="public/rick-form.js" async></script>
+    <script>
+      document.getElementById("open-btn").addEventListener("click", function () {
+        if (!window.RickForm) {
+          alert("rick-form.js not loaded yet — run `npm run build` first");
+          return;
+        }
+        window.RickForm.open({
+          contentKey: "typhoon-contact-form-2026-05-11",
+          title: "Get a Free Consultation",
+          mode: "auto",
+          callbacks: {
+            onSubmit: function (values) { console.log("[harness] submit:", values); },
+            onClose: function () { console.log("[harness] close"); },
+          },
+        });
+      });
+    </script>
+  </body>
+</html>

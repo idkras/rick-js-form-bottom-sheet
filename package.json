@@ -1,0 +1,25 @@
+{
+  "name": "rick-js-form-bottom-sheet",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Rick form bottom sheet — generic <RickSheet> container (mobile = bottom-sheet with gestures, desktop = centered popup) + content plugin registry. Companion to rick-js-bottom-sheet-stripe but for HTML forms instead of payments.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build --config vite.widget.config.ts",
+    "build:demo": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "sass": "^1.81.0",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vite-plugin-css-injected-by-js": "^3.5.2"
+  }
+}

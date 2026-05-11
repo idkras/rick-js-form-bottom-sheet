@@ -1,0 +1,17 @@
+{
+  "buildCommand": "npm run build && npm run build:demo",
+  "outputDirectory": "dist",
+  "framework": null,
+  "rewrites": [
+    { "source": "/rick-form.js", "destination": "/rick-form.js" }
+  ],
+  "headers": [
+    {
+      "source": "/rick-form.js",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=300, must-revalidate" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    }
+  ]
+}
