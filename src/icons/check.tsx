@@ -1,5 +1,7 @@
 import type { SVGProps } from "react"
 
+// Plain checkmark — inherits color from `currentColor`. Works on dark and light
+// backgrounds (no filled circle). Used inside ChipSelector when selected.
 export function CheckIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -11,11 +13,10 @@ export function CheckIcon(props: SVGProps<SVGSVGElement>) {
       aria-hidden="true"
       {...props}
     >
-      <circle cx="8" cy="8" r="8" fill="currentColor" />
       <path
-        d="M4.5 8.3L7 10.5L11.5 5.5"
-        stroke="white"
-        strokeWidth="1.6"
+        d="M3 8.5L6.5 12L13 4.5"
+        stroke="currentColor"
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />

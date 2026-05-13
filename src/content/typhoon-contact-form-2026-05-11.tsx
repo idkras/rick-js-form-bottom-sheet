@@ -1,13 +1,16 @@
 // Content plugin: 1:1 baseline copy of typhoon.coffee /contacts/ form (wpcf7-f171).
-// Captured 2026-05-11 — see [rick.ai]/clients/all-clients/typhoon-coffee/projects/pr-rick-7r1/landing-capture-2026-05-11/.
+// Captured 2026-05-11. See landing-capture-2026-05-11/.
 //
-// CHANGES vs original:
-// - <select name="current-status"> → <ChipSelector> (per owner screenshot 2026-05-11,
-//   shadcn ToggleGroup style — pill chips with check icon for selected).
-// - Submit goes through callbacks.onSubmit (Rick.js bridge → flow.rick.ai/webhook/snippetFormHook)
-//   instead of wpcf7 AJAX endpoint.
+// Design canon applied (per owner directive 2026-05-12, see skill
+// 4-form-bottom-sheet-via-yazychek):
+// - Floating labels inside the field (tbank.ru/cards/debit-cards/ pattern)
+// - No "*" for required — grey-italic word "обязательный"/"required" inside label
+// - Field order: phone → email → name (lowest friction first)
+// - <select name="current-status"> → ChipSelector (shadcn ToggleGroup style)
+// - Details label = call-to-action ("Что важно учесть...") instead of bland "Details"
+// - Submit routes through callbacks.onSubmit → Rick.js bridge → flow.rick.ai/webhook/snippetFormHook
 //
-// All other fields, copy, validation, CTA — identical to baseline.
+// All wpcf7 input names preserved 1:1 so the n8n bridge payload schema doesn't break.
 import { useState, type FormEvent } from "react"
 import { ChipSelector, type ChipOption } from "../components/chip-selector"
 import { TextField, TextArea } from "../components/text-field"
@@ -23,24 +26,24 @@ const STATUS_OPTIONS: ChipOption[] = [
 ]
 
 export function TyphoonContactForm({ onSubmit }: RickFormContentProps) {
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
   const [phone, setPhone] = useState("")
+  const [email, setEmail] = useState("")
+  const [name, setName] = useState("")
   const [status, setStatus] = useState<string | null>(null)
   const [details, setDetails] = useState("")
   const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
-    if (!name || !email || !phone) {
-      setError("Please fill in name, email and phone")
+    if (!phone || !email || !name) {
+      setError("Please fill phone, email and name")
       return
     }
     setError(null)
     onSubmit({
-      "your-name": name,
-      "your-email": email,
       "your-phone-visual": phone,
+      "your-email": email,
+      "your-name": name,
       "current-status": status ?? "",
       details,
     })
@@ -49,34 +52,34 @@ export function TyphoonContactForm({ onSubmit }: RickFormContentProps) {
   return (
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
       <TextField
-        label="Your name *"
-        name="your-name"
-        type="text"
+        label="Phone number"
+        requiredText="required"
+        name="your-phone-visual"
+        type="tel"
         required
-        placeholder="Your name *"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        autoComplete="name"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+        autoComplete="tel"
       />
       <TextField
-        label="Email *"
+        label="Email"
+        requiredText="required"
         name="your-email"
         type="email"
         required
-        placeholder="Email *"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         autoComplete="email"
       />
       <TextField
-        label="Phone number *"
-        name="your-phone-visual"
-        type="tel"
+        label="Your name"
+        requiredText="required"
+        name="your-name"
+        type="text"
         required
-        placeholder="Phone number *"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-        autoComplete="tel"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        autoComplete="name"
       />
       <ChipSelector
         title="How did you hear about us?"
@@ -87,9 +90,8 @@ export function TyphoonContactForm({ onSubmit }: RickFormContentProps) {
         name="current-status"
       />
       <TextArea
-        label="Details"
+        label="What should we know before the call? (roaster size, location, timing)"
         name="details"
-        placeholder="Let us know any details or features you're looking for"
         value={details}
         onChange={(e) => setDetails(e.target.value)}
       />
@@ -101,6 +103,4 @@ export function TyphoonContactForm({ onSubmit }: RickFormContentProps) {
   )
 }
 
-// Register on module load so any `import "./content/typhoon-contact-form-2026-05-11"`
-// (e.g. from standalone.tsx) wires the plugin into the registry.
 RickFormRegistry.register("typhoon-contact-form-2026-05-11", TyphoonContactForm)
