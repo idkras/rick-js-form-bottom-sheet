@@ -23,7 +23,7 @@ import styles from "./app.module.scss"
 const CLIENT_CONFIG = {
   client: "typhoon-coffee",
   epicId: "pr-rick-7r1",
-  iframeSrc: "/typhoon-mirror/index.html",  // local mirror with <base href> → assets from typhoon CDN
+  iframeSrc: "/typhoon/contacts/",  // Vite proxy → https://typhoon.coffee/contacts/ (live, navigation works, same-origin)
   injector: {
     contentKey: "typhoon-contact-form-2026-05-11",
     formTitle: "Get a Free Consultation",

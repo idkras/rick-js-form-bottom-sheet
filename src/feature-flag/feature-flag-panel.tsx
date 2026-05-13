@@ -1,6 +1,7 @@
-// Small floating panel that appears after 4 quick clicks anywhere on the page.
-// Lets owner toggle "Use RickForm" feature flag and leave design feedback that
-// downloads as .md ready to drop into client KB.
+// Tiny pill that appears after 4 quick clicks. Switcher LEFT.
+// Collapsed: ~280×44px. Click 'feedback' link → expands inline textarea.
+// Per owner directive 2026-05-13: «форма с фича флагом должна быть меньше
+// в 10 раз и свитчер должен быть слева».
 import { useEffect, useRef, useState } from "react"
 import {
   appendFeedback,
@@ -31,13 +32,12 @@ export function FeatureFlagPanel({
 }: FeatureFlagPanelProps) {
   const [comment, setComment] = useState("")
   const [entries, setEntries] = useState<FeedbackEntry[]>(() => loadFeedback())
+  const [feedbackOpen, setFeedbackOpen] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
-    if (visible && textareaRef.current) {
-      textareaRef.current.focus()
-    }
-  }, [visible])
+    if (feedbackOpen && textareaRef.current) textareaRef.current.focus()
+  }, [feedbackOpen])
 
   if (!visible) return null
 
@@ -50,8 +50,7 @@ export function FeatureFlagPanel({
       viewport: `${window.innerWidth}x${window.innerHeight}`,
       comment: comment.trim(),
     }
-    const updated = appendFeedback(entry)
-    setEntries(updated)
+    setEntries(appendFeedback(entry))
     setComment("")
   }
 
@@ -68,81 +67,72 @@ export function FeatureFlagPanel({
   }
 
   return (
-    <div data-no-quad className={styles.panel} role="dialog" aria-label="Feature flags and feedback">
-      <header className={styles.header}>
-        <span className={styles.title}>Feature flags · {client}</span>
-        <button type="button" className={styles.closeBtn} onClick={onClose} aria-label="Close">
+    <div data-no-quad className={styles.pillWrap} role="dialog" aria-label="Feature flag">
+      <div className={styles.pill}>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={flagState === "rickform"}
+          aria-label="Use RickForm"
+          data-state={flagState}
+          className={styles.switch}
+          onClick={onToggle}
+        >
+          <span className={styles.knob} />
+        </button>
+        <span className={styles.label} title={flagState === "rickform" ? "Native form hidden, RickForm active" : "Client sees their own form"}>
+          RickForm
+        </span>
+        <button
+          type="button"
+          className={styles.iconBtn}
+          onClick={() => setFeedbackOpen((v) => !v)}
+          aria-label={feedbackOpen ? "Close feedback" : "Open feedback"}
+          aria-expanded={feedbackOpen}
+        >
+          {feedbackOpen ? "−" : "✎"}
+          {entries.length > 0 ? <span className={styles.dot}>{entries.length}</span> : null}
+        </button>
+        <button type="button" className={styles.iconBtn} onClick={onClose} aria-label="Close panel">
           ×
         </button>
-      </header>
+      </div>
 
-      <section className={styles.section}>
-        <label className={styles.toggleRow}>
-          <span className={styles.toggleLabel}>
-            Use RickForm
-            <span className={styles.toggleHint}>
-              {flagState === "rickform"
-                ? "✓ native form hidden, our bottom-sheet active"
-                : "off — client sees their own form"}
-            </span>
-          </span>
-          <button
-            type="button"
-            role="switch"
-            aria-checked={flagState === "rickform"}
-            data-state={flagState}
-            className={styles.switch}
-            onClick={onToggle}
-          >
-            <span className={styles.knob} />
-          </button>
-        </label>
-      </section>
-
-      <section className={styles.section}>
-        <h3 className={styles.sectionTitle}>Design feedback</h3>
-        <textarea
-          ref={textareaRef}
-          className={styles.feedbackInput}
-          placeholder="What to fix? Where? How? (e.g. 'chip Other на mobile прижат к краю — gap 12px')"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          rows={3}
-        />
-        <div className={styles.feedbackRow}>
-          <button
-            type="button"
-            className={styles.primaryBtn}
-            onClick={handleSaveFeedback}
-            disabled={!comment.trim()}
-          >
-            Save entry
-          </button>
-          <span className={styles.entriesCount}>
-            {entries.length} {entries.length === 1 ? "entry" : "entries"}
-          </span>
-        </div>
-        {entries.length > 0 ? (
-          <div className={styles.feedbackActions}>
-            <button type="button" className={styles.linkBtn} onClick={handleDownload}>
-              Download .md
+      {feedbackOpen ? (
+        <div className={styles.feedbackPopover}>
+          <textarea
+            ref={textareaRef}
+            className={styles.feedbackInput}
+            placeholder="What to fix? Where? How?"
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            rows={2}
+          />
+          <div className={styles.feedbackRow}>
+            <button
+              type="button"
+              className={styles.primaryBtn}
+              onClick={handleSaveFeedback}
+              disabled={!comment.trim()}
+            >
+              Save
             </button>
-            <button type="button" className={styles.linkBtnDanger} onClick={handleClear}>
-              Clear all
-            </button>
+            {entries.length > 0 ? (
+              <>
+                <button type="button" className={styles.linkBtn} onClick={handleDownload}>
+                  Download .md
+                </button>
+                <button type="button" className={styles.linkBtnDanger} onClick={handleClear}>
+                  Clear
+                </button>
+              </>
+            ) : null}
           </div>
-        ) : null}
-      </section>
-
-      <footer className={styles.footer}>
-        <p className={styles.footerText}>
-          Сохранить .md в:
-          <br />
-          <code className={styles.codePath}>
-            [rick.ai]/clients/all-clients/{client}/projects/{epicId}/design-feedback/{new Date().toISOString().slice(0, 10)}.md
-          </code>
-        </p>
-      </footer>
+          <p className={styles.pathHint} title="Save downloaded .md to this canonical path">
+            → <code>{`projects/${epicId}/design-feedback/${new Date().toISOString().slice(0, 10)}.md`}</code>
+          </p>
+        </div>
+      ) : null}
     </div>
   )
 }
