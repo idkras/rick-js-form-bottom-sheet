@@ -25,11 +25,13 @@
   margin: 0;
   font-size: 13px;
   font-weight: 400;
-  line-height: 1.4;
+  line-height: 1.5;
   color: #6b7280;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  // Allow wrap — long explainers like kg→cups mapping need multiple lines
+  // Auto-balance per CSS Text Module Level 4 (Safari 17+, Chrome 120+).
+  text-wrap: pretty;
+  // Tighter letter-spacing keeps long copy readable in narrow card
+  letter-spacing: 0.005em;
 }
 
 .chipRow {

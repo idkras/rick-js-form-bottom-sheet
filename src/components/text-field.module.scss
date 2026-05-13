@@ -50,7 +50,7 @@
   top: 16px;
   display: inline-flex;
   align-items: baseline;
-  gap: 8px;
+  gap: 5px;
   font-size: 15px;
   line-height: 1.2;
   color: #6b7280;
@@ -86,9 +86,12 @@
 .requiredHint {
   display: inline-block;
   font-style: italic;
-  font-size: 13px;
+  font-size: 12px;
   color: #9ca3af;
   font-weight: 400;
+  letter-spacing: 0.01em;
+  // Tighter than label baseline — prevent visual orphan word
+  margin-left: -1px;
 }
 
 // Lifted state shrinks the hint proportionally
