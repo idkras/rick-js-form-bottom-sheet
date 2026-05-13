@@ -1,0 +1,50 @@
+.root {
+  position: fixed;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.siteFrame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+.hint {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 2147483500;
+  background: rgba(15, 15, 18, 0.78);
+  color: #f3f3f5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 14px -3px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  animation: hintIn 0.3s ease, hintOut 0.5s ease 5.5s forwards;
+}
+
+@keyframes hintIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes hintOut {
+  to { opacity: 0; transform: translateY(-4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hint { animation: none; }
+}
