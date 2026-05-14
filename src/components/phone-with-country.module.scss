@@ -1,0 +1,97 @@
+// Visual reference: text-field.module.scss (same floating-label canon) +
+// tbank.ru/cards/debit-cards/ phone-with-country pattern (segmented control).
+
+.wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #d1d5db;
+  border-radius: 14px;
+  background: #ffffff;
+  padding: 6px 14px 8px 14px;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+  font-family: inherit;
+
+  &[data-focused="true"] {
+    border-color: #0a0a0c;
+    box-shadow: 0 0 0 3px rgba(10, 10, 12, 0.08);
+  }
+}
+
+.label {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;  // tight 5px gap label ↔ required hint (owner directive 2026-05-12)
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 2px;
+  letter-spacing: 0.01em;
+  // Pin label to top — no float-up animation, keeps row compact for mobile
+  pointer-events: none;
+}
+
+.labelText {
+  color: #0a0a0c;
+}
+
+.requiredHint {
+  font-style: italic;
+  font-weight: 400;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.country {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  color: #0a0a0c;
+  padding: 8px 4px 8px 0;
+  cursor: pointer;
+  outline: none;
+  // Constrain so long names don't push input out
+  max-width: 110px;
+
+  &:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+.divider {
+  display: inline-block;
+  width: 1px;
+  height: 18px;
+  background: #e5e7eb;
+  margin: 0 10px;
+  flex-shrink: 0;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  color: #0a0a0c;
+  padding: 8px 0;
+  outline: none;
+  letter-spacing: 0.01em;
+
+  &::placeholder {
+    color: #9ca3af;
+  }
+}

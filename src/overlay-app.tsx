@@ -16,9 +16,20 @@ const CLIENT_CONFIG = {
   injector: {
     contentKey: "typhoon-contact-form-2026-05-11",
     formTitle: "Get a Free Consultation",
-    hideSelector: "form.wpcf7-form, form#subscribe_form",
+    // Hide typhoon native popup overlay + its inline forms when flag=rickform.
+    // Discovered via DOM inspection 2026-05-14:
+    //   - #recall_popup_overlay is the dark backdrop their JS toggles
+    //   - .recall-popup-overlay is the popup body (Anna + "24 hours" message)
+    //   - form.wpcf7-form / form#subscribe_form — embedded CF7 forms on /contacts/
+    hideSelector:
+      "#recall_popup_overlay, .recall-popup-overlay, .recall-popup, form.wpcf7-form, form#subscribe_form",
+    // Real typhoon CTA selectors (discovered via DOM inspection 2026-05-14):
+    //   - .js-recall-popup-call — both "Get a free consultation" buttons
+    //   - .button--primary text-match — "I'm ready to discuss the details" hero CTA
+    //   - a[href*="/contacts/"] — header/footer "Contacts" nav link
+    //   - .wpcf7-submit — direct CF7 submit fallback
     triggerSelector:
-      "input[type='submit'], button[type='submit'], .wpcf7-submit, a[href*='#wpcf7'], a[href*='/contacts'], .button[href*='consultation']",
+      ".js-recall-popup-call, .button--primary, .button--lite, a[href*='/contacts/'], a[href*='#wpcf7'], .wpcf7-submit, input[type='submit'], button[type='submit']",
   } satisfies InjectorConfig,
 }
 

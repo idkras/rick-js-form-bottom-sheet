@@ -1,21 +1,30 @@
-// Content plugin: 1:1 baseline copy of typhoon.coffee /contacts/ form (wpcf7-f171).
-// Captured 2026-05-11. See landing-capture-2026-05-11/.
+// Content plugin: minimalist typhoon-coffee /contacts/ form (wpcf7-f171).
+// Owner directive 2026-05-14: «убрать имя и почту, оставить только поле с
+// телефоном и кодом страны и 2мя вопросами квиза».
+//
+// 3 fields total — friction-minimized for cold-traffic CTA:
+//   1. Phone number + country code (e164 normalized server-side)
+//   2. ChipSelector — "How did you hear about us?" (status / startup / coffee shop / hobby)
+//   3. ChipSelector — "How much coffee do you plan to roast per week?" (typhoon roaster line)
+//
+// Removed fields (vs prior 2026-05-11 variant):
+//   - your-email (cold traffic doesn't want to give email yet)
+//   - your-name (we collect on the follow-up call)
+//   - details textarea (replaced by structured chip answers)
+//
+// Wire contract:
+//   - bridge POST to flow.rick.ai/webhook/snippetFormHook (DocumentInjector)
+//   - form_name: "typhoon-contact-form-2026-05-11" (unchanged so analytics persist)
+//   - phone normalized as e164 (`+39612345678`) — replaces wpcf7 `your-phone-visual`
+//   - 2 chip answers preserved at original wpcf7 names (`current-status`, `kg-per-week`)
 //
 // Design canon (skill 4-form-via-bottom-sheet):
-// - Floating labels inside fields (tbank.ru/cards/debit-cards/ pattern)
-// - No "*" — grey-italic word "required" inside label, tight 5px gap
-// - Field order: phone → email → name (lowest friction first)
-// - <select name="current-status"> → ChipSelector
-// - Details label = call-to-action
-// - Submit routes through callbacks.onSubmit → Rick.js bridge → flow.rick.ai/webhook/snippetFormHook
-//
-// Typhoon-specific (per owner directive 2026-05-12):
-// - Added kg-per-week question (typhoon roaster line: 2.5/5/10/20/30 kg per batch)
-//   with examples mapping kg → cups/week → roastery scale.
-// - All wpcf7 input names preserved 1:1 so n8n bridge schema doesn't break.
+//   - Floating-label canon (tbank.ru pattern), grey-italic "required", 5px gap
+//   - No "*" markers
+//   - Single CTA button "Get a Free Consultation"
 import { useState, type FormEvent } from "react"
 import { ChipSelector, type ChipOption } from "../components/chip-selector"
-import { TextField, TextArea } from "../components/text-field"
+import { PhoneWithCountry } from "../components/phone-with-country"
 import { RickFormRegistry, type RickFormContentProps } from "../registry"
 import styles from "./typhoon-contact-form-2026-05-11.module.scss"
 
@@ -42,61 +51,53 @@ const KG_OPTIONS: ChipOption[] = [
 
 export function TyphoonContactForm({ onSubmit }: RickFormContentProps) {
   const [phone, setPhone] = useState("")
-  const [email, setEmail] = useState("")
-  const [name, setName] = useState("")
+  const [countryIso, setCountryIso] = useState("IT")
+  const [dial, setDial] = useState("+39")
+  const [e164, setE164] = useState("")
   const [status, setStatus] = useState<string | null>(null)
   const [kgPerWeek, setKgPerWeek] = useState<string | null>(null)
-  const [details, setDetails] = useState("")
   const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
-    if (!phone || !email || !name) {
-      setError("Please fill phone, email and name")
+    const digitsOnly = phone.replace(/\D/g, "")
+    if (digitsOnly.length < 6) {
+      setError("Please enter a valid phone number")
+      return
+    }
+    if (!status) {
+      setError("Please pick your current situation")
+      return
+    }
+    if (!kgPerWeek) {
+      setError("Please pick your weekly volume")
       return
     }
     setError(null)
     onSubmit({
-      "your-phone-visual": phone,
-      "your-email": email,
-      "your-name": name,
+      "your-phone-visual": phone,                  // human-formatted for analytics
+      "your-phone-e164": e164,                     // dial-prefixed normalized for CRM
+      "your-phone-country": countryIso,            // ISO alpha-2 for routing
       "current-status": status ?? "",
       "kg-per-week": kgPerWeek ?? "",
-      "details": details,
     })
   }
 
   return (
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
-      <TextField
+      <PhoneWithCountry
         label="Phone number"
         requiredText="required"
         name="your-phone-visual"
-        type="tel"
-        required
         value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-        autoComplete="tel"
-      />
-      <TextField
-        label="Email"
-        requiredText="required"
-        name="your-email"
-        type="email"
+        countryIso={countryIso}
+        onChange={({ value, countryIso: nextIso, dial: nextDial, e164: nextE164 }) => {
+          setPhone(value)
+          setCountryIso(nextIso)
+          setDial(nextDial)
+          setE164(nextE164)
+        }}
         required
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        autoComplete="email"
-      />
-      <TextField
-        label="Your name"
-        requiredText="required"
-        name="your-name"
-        type="text"
-        required
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        autoComplete="name"
       />
       <ChipSelector
         title="How did you hear about us?"
@@ -114,16 +115,13 @@ export function TyphoonContactForm({ onSubmit }: RickFormContentProps) {
         onChange={setKgPerWeek}
         name="kg-per-week"
       />
-      <TextArea
-        label="What should we know before the call? (current setup, location, timing)"
-        name="details"
-        value={details}
-        onChange={(e) => setDetails(e.target.value)}
-      />
       {error ? <p className={styles.error}>{error}</p> : null}
       <button type="submit" className={styles.submit}>
         Get a Free Consultation
       </button>
+      <p className={styles.privacyNote}>
+        We'll call you on {dial} — no email, no spam. One call, plain talk.
+      </p>
     </form>
   )
 }

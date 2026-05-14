@@ -72,8 +72,13 @@ export class DocumentInjector {
       if (target.closest("#rick-form-overlay")) return
       const triggerEl = target.closest(config.triggerSelector)
       if (!triggerEl) return
+      // Block typhoon's native handlers — they may also listen at document
+      // capture phase (`.js-recall-popup-call` opens their Anna popup).
+      // stopImmediatePropagation prevents any other listener on the same
+      // element/phase from firing after ours.
       e.preventDefault()
       e.stopPropagation()
+      ;(e as Event & { stopImmediatePropagation: () => void }).stopImmediatePropagation()
       this.rickForm.open({
         contentKey: config.contentKey,
         title: config.formTitle ?? "Get a Free Consultation",
