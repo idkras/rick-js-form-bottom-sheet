@@ -1,0 +1,147 @@
+// PhoneAutoCountry — single input, auto-detect country in label header.
+// Spacing canon: 3px micromodular grid (12×12 base, 3px substep).
+// All padding/margin/gap = multiples of 3 (3 / 6 / 9 / 12 / 15 / 18 / 21 / 24).
+
+.wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;                       // 3-grid
+  border: 1px solid #d1d5db;
+  border-radius: 12px;            // 3-grid
+  background: #ffffff;
+  padding: 9px 15px 12px 15px;    // 3-grid (was 6 14 8 14)
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
+  font-family: inherit;
+
+  &[data-focused="true"] {
+    border-color: #0100d8;        // typhoon primary blue
+    box-shadow: 0 0 0 3px rgba(1, 0, 216, 0.12);
+  }
+
+  &[data-verdict="ok"] {
+    border-color: #16a34a;        // green-600 — recognized country
+  }
+
+  &[data-verdict="warn"] {
+    border-color: #d97706;        // amber-600 — unknown / short
+  }
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;                       // 3-grid
+  min-height: 18px;               // 3-grid (was 16) — стабилизирует row если badge скрыт
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  letter-spacing: 0.01em;
+  pointer-events: none;
+  margin: 0;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;                       // 3-grid (was 4)
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  padding: 3px 9px;               // 3-grid (was 4 8)
+  border-radius: 9999px;
+  background: #f3f4f6;
+  color: #0a0a0c;
+  transition: background-color 180ms ease, color 180ms ease;
+
+  &[data-verdict="ok"] {
+    background: #ecfdf5;
+    color: #047857;               // green-700
+  }
+
+  &[data-verdict="warn"] {
+    background: #fffbeb;
+    color: #b45309;               // amber-700
+  }
+}
+
+.flag {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.dial {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.dot {
+  opacity: 0.5;
+  margin: 0 -3px;
+}
+
+.name {
+  // Truncate long names so badge stays in row
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tick, .warn {
+  font-weight: 700;
+}
+
+.input {
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 18px;                // bumped (was 16) for mobile thumb-typing
+  font-weight: 500;
+  color: #0a0a0c;
+  padding: 6px 0;                 // 3-grid
+  outline: none;
+  letter-spacing: 0.01em;
+  width: 100%;
+
+  &::placeholder {
+    color: #9ca3af;
+    font-weight: 400;
+    // Owner directive 2026-05-14: «серый плейсхолдер с номером телефона
+    // не должен пропадать» — but native CSS auto-hides placeholder
+    // when value is non-empty. We can't keep it on top of typed value,
+    // so canonical compromise: keep visible on focus until first keystroke.
+    opacity: 1;
+  }
+
+  &:focus::placeholder {
+    // Keep visible on focus (default in modern browsers, explicit here)
+    opacity: 1;
+    color: #9ca3af;
+  }
+}
+
+.hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #6b7280;
+  letter-spacing: 0.01em;
+
+  &[data-verdict="warn"] {
+    color: #b45309;               // amber-700, same as badge warn
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wrap, .badge {
+    transition: none;
+  }
+}

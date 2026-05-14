@@ -1,23 +1,31 @@
+// Typhoon form styles. Owner directive 2026-05-14:
+//   - All spacings multiples of 3px (micromodular grid 12×12 base, 3px substep)
+//   - Submit blue #0100D8 (typhoon primary), not black
+//   - WhatsApp footer link
+// 3-grid scale: 3 / 6 / 9 / 12 / 15 / 18 / 21 / 24 / 27 / 30 / 36 / 42 / 48
+// Typhoon primary blue: rgb(1, 0, 216) = #0100D8 (verified via DOM probe).
+
 .form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;                          // 3-grid (was 14)
 }
 
 .submit {
-  margin-top: 8px;
+  margin-top: 6px;                    // 3-grid (was 8)
   font-family: inherit;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   line-height: 1.2;
+  letter-spacing: 0.01em;
   color: #ffffff;
-  background: #0a0a0c;
-  border: 1px solid #0a0a0c;
-  border-radius: 14px;
-  padding: 16px 22px;
+  background: #0100d8;                // typhoon primary blue (was #0a0a0c)
+  border: 1px solid #0100d8;
+  border-radius: 12px;                // 3-grid (was 14)
+  padding: 15px 21px;                 // 3-grid (was 16 22)
   cursor: pointer;
   transform: translateY(0);
-  box-shadow: 0 4px 14px -4px rgba(10, 10, 12, 0.28);
+  box-shadow: 0 3px 12px -3px rgba(1, 0, 216, 0.32);
   transition:
     background-color 180ms ease,
     border-color 180ms ease,
@@ -25,20 +33,20 @@
     box-shadow 180ms ease;
 
   &:hover {
-    background: #1f1f23;
-    border-color: #1f1f23;
+    background: #1a1ae5;
+    border-color: #1a1ae5;
     transform: translateY(-2px);
-    box-shadow: 0 10px 22px -6px rgba(10, 10, 12, 0.36);
+    box-shadow: 0 9px 21px -6px rgba(1, 0, 216, 0.42);
   }
 
   &:focus-visible {
-    outline: 2px solid #0a0a0c;
+    outline: 3px solid #0100d8;
     outline-offset: 3px;
   }
 
   &:active {
     transform: translateY(0) scale(0.99);
-    box-shadow: 0 2px 8px -2px rgba(10, 10, 12, 0.24);
+    box-shadow: 0 3px 9px -3px rgba(1, 0, 216, 0.28);
   }
 
   &:disabled {
@@ -51,18 +59,42 @@
 
 .error {
   margin: 0;
-  font-size: 14px;
+  font-size: 13px;
+  line-height: 1.4;
   color: #b00020;
+  letter-spacing: 0.01em;
 }
 
-.privacyNote {
-  margin: 6px 0 0 0;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.45;
-  color: #6b7280;
-  text-align: center;
-  text-wrap: pretty;
+.waLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;                           // 3-grid
+  margin: 6px 0 0 0;                  // 3-grid
+  padding: 9px 12px;                  // 3-grid
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: #25d366;                     // WhatsApp green official brand
+  text-decoration: none;
+  border-radius: 9px;                 // 3-grid
+  transition: background-color 160ms ease;
+
+  &:hover {
+    background: rgba(37, 211, 102, 0.08);
+    color: #1eaa52;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #25d366;
+    outline-offset: 3px;
+  }
+}
+
+.waIcon {
+  width: 18px;                        // 3-grid
+  height: 18px;
+  flex-shrink: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
