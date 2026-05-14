@@ -31,96 +31,29 @@
   }
 }
 
-.headerRow {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;                      // 3-grid — space между label слева и meta справа
-  min-height: 18px;
-}
-
+// Single-line label — owner directive 2026-05-14 CleanShot xTGK1Rq1:
+// «в 1 строчку — Phone number · +39 Italy, right. Keep typing?»
+// Label теперь содержит весь текст состояния. Текст flag + dial + country + verdict
+// inline через composeLabelLine() в TS. Wrap allowed для длинных state'ов
+// (P3 ambiguous +1 + Canada note).
 .label {
+  display: block;
   font-size: 12px;
   font-weight: 500;
+  line-height: 1.4;
   color: #6b7280;
   letter-spacing: 0.01em;
   pointer-events: none;
   margin: 0;
-  padding-top: 3px;               // 3-grid — выровнять с центром badge pill
-}
-
-// Right column: badge на верху + hint subtle снизу (per owner directive 2026-05-14).
-.meta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 3px;                       // 3-grid
-  min-width: 0;
-  flex: 1;
-  max-width: 70%;                 // не даём meta перетянуть всё пространство
-}
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;                       // 3-grid
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1;
-  padding: 3px 9px;               // 3-grid
-  border-radius: 9999px;
-  background: #f3f4f6;
-  color: #0a0a0c;
-  transition: background-color 180ms ease, color 180ms ease;
-  white-space: nowrap;
+  text-wrap: pretty;
+  transition: color 180ms ease;
 
   &[data-verdict="ok"] {
-    background: #ecfdf5;
-    color: #047857;               // green-700
+    color: #047857;               // green-700, recognized country
   }
 
   &[data-verdict="warn"] {
-    background: #fffbeb;
-    color: #b45309;               // amber-700
-  }
-}
-
-.flag {
-  font-size: 15px;
-  line-height: 1;
-}
-
-.dial {
-  font-variant-numeric: tabular-nums;
-  font-weight: 600;
-}
-
-.dot {
-  opacity: 0.5;
-  margin: 0 -3px;
-}
-
-.name {
-  max-width: 120px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-// Hint inline в надзаголовке справа (вместо отдельной строки под input).
-// Owner directive 2026-05-14: «этот текст ппишем в надзаголовке справа, не
-// нужна иконка ⚠ — у тебя все есть чтобы было предложение».
-.metaHint {
-  font-size: 11px;
-  line-height: 1.35;
-  color: #6b7280;
-  letter-spacing: 0.01em;
-  text-align: right;
-  text-wrap: pretty;
-  max-width: 100%;
-
-  &[data-verdict="warn"] {
-    color: #b45309;               // amber-700, тот же оттенок что badge warn
+    color: #b45309;               // amber-700, unknown / short
   }
 }
 

@@ -116,10 +116,33 @@ export interface PhoneStatus {
   dial: string
   hint?: string
   verdict: "neutral" | "ok" | "warn"
+  /** Single-line label text combining label prefix + country-info + verdict (per owner directive 2026-05-14 CleanShot xTGK1Rq1). */
+  labelLine: string
+}
+
+/** Compose the single-line label per state. Owner directive 2026-05-14:
+ *  «в 1 строчку — Phone number · +39 Italy, right. Keep typing?»
+ */
+function composeLabelLine(s: Omit<PhoneStatus, "labelLine">): string {
+  if (s.kind === "empty") return "Phone number to reach you"
+  if (s.kind === "typing-code") return "Phone number · 🌐 detecting your country…"
+  if (s.kind === "unknown-code") return `Phone number · ${s.dial} country unknown, double-check?`
+  // For ambiguous +1, hint about Canada/Caribbean handled inline.
+  const ambiguousNote = s.dial === "+1" ? " (or Canada — same code)" : ""
+  const base = `Phone number · ${s.flag} ${s.dial} ${s.name}${ambiguousNote}, right`
+  if (s.kind === "short") return `${base}. Keep typing?`
+  if (s.kind === "valid") return `${base}. Looks good`
+  return base // recognized
 }
 
 // Resolve country from raw input. Longest-prefix match.
+// Wrapper around _detectCountryRaw that injects labelLine via composeLabelLine.
 export function detectCountry(input: string): PhoneStatus {
+  const raw = _detectCountryRaw(input)
+  return { ...raw, labelLine: composeLabelLine(raw) }
+}
+
+function _detectCountryRaw(input: string): Omit<PhoneStatus, "labelLine"> {
   const trimmed = input.trim()
   if (!trimmed) {
     return { kind: "empty", iso: null, flag: "🌐", name: "", dial: "", verdict: "neutral" }
@@ -237,43 +260,25 @@ export function PhoneAutoCountry({
     onChange({ value: next, status: nextStatus, e164: nextE164 })
   }
 
+  // Per owner directive 2026-05-14 CleanShot xTGK1Rq1:
+  //   «в 1 строчку — Phone number · +39 Italy, right. Keep typing?»
+  // Single-line label that combines static prefix + country-info + verdict comment.
+  // No separate badge, no separate hint row — one fluid sentence that updates per state.
+  // The `label` prop is now the empty-state default; live state overrides it.
   return (
     <div
       className={styles.wrap}
       data-verdict={status.verdict}
       data-focused={focused ? "true" : "false"}
     >
-      {/* Header row: label left, badge + hint stacked right (owner directive
-          2026-05-14 «hint в надзаголовке справа, не нужна иконка ⚠ / ✓ —
-          цвет бейджа сам коммуницирует статус»). */}
-      <div className={styles.headerRow}>
-        <label htmlFor={`${reactId}-num`} className={styles.label}>
-          {label}
-        </label>
-        <div className={styles.meta}>
-          {status.kind !== "empty" ? (
-            <span
-              className={styles.badge}
-              data-verdict={status.verdict}
-              aria-live="polite"
-            >
-              <span className={styles.flag} aria-hidden="true">{status.flag}</span>
-              <span className={styles.dial}>{status.dial}</span>
-              {status.name ? <span className={styles.dot} aria-hidden="true">·</span> : null}
-              {status.name ? <span className={styles.name}>{status.name}</span> : null}
-            </span>
-          ) : null}
-          {status.hint ? (
-            <span
-              id={`${reactId}-hint`}
-              className={styles.metaHint}
-              data-verdict={status.verdict}
-            >
-              {status.hint}
-            </span>
-          ) : null}
-        </div>
-      </div>
+      <label
+        htmlFor={`${reactId}-num`}
+        className={styles.label}
+        data-verdict={status.verdict}
+        aria-live="polite"
+      >
+        {status.labelLine}
+      </label>
       <input
         id={`${reactId}-num`}
         className={styles.input}
@@ -286,7 +291,6 @@ export function PhoneAutoCountry({
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         placeholder={placeholder}
-        aria-describedby={status.hint ? `${reactId}-hint` : undefined}
       />
     </div>
   )
