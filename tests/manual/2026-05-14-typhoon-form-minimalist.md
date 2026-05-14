@@ -92,16 +92,21 @@ Tester: form-bottom-sheet-qa-engineer subagent (autonomous), then human re-check
 - DOM probe verdict: `chipsInSheet: 11`, `countryOptions: 12`, `emailInSheet: false`, `nameInSheet: false`, `detailsInSheet: false`
 - Hijack verdict: `recallOverlayHidden: true (display:none)`, `ourSheetOpen: true`, `sheetTitle: "Get a Free Consultation"`
 
-## Trust metric
+## Trust metric (honest — post project-progress-auditor 2026-05-14)
 
-| Test class | Count | Pass | Fail | Blocked | %Pass |
-|---|---|---|---|---|---|
-| T-prefix (manual) | 19 | 14 | 0 | 5 ⏳ | 74% |
-| C-prefix (corner) | 8 | 4 | 0 | 4 ⏳ | 50% |
-| R-prefix (regression) | 7 | 7 | 0 | 0 | 100% |
-| **Total** | **34** | **25** | **0** | **9** | **74%** |
+| Test class | Count | Pass (verified live) | Wired-only (code exists, not e2e tested) | Fail | Blocked (need external) | %Verified |
+|---|---|---|---|---|---|---|
+| T-prefix (manual) | 19 | 13 | 1 (T13 live submit) | 0 | 5 ⏳ | 68% |
+| C-prefix (corner) | 8 | 4 | 0 | 0 | 4 ⏳ | 50% |
+| R-prefix (regression) | 7 | 7 | 0 | 0 | 0 | 100% |
+| **Total** | **34** | **24** | **1** | **0** | **9** | **71%** |
 
-Blocked tests (T15-T19, C01-C02, C06-C07) — требуют либо реального браузера (network throttling, OS reduced-motion, mobile viewport), либо новой preview-сессии с URL params. Не блокируют ship-ready для текущего workflow, но открывают итерацию 2 QA.
+**Reclassification rationale (auditor finding B2 + B3):**
+
+- T13 (POST `flow.rick.ai/webhook/snippetFormHook` → Monday board `1231414321`) ранее считался Pass, теперь честно — **wired-only**: код есть, network HAR не пойман, Monday board row не grep'нут. **Это THE outcome gate** — без verified T13 critical chain step 2 не закрыт.
+- Blocked counts (T15-T19, C01-C02, C06-C07) более honest как «unknown» — 2-3 из 9 могут fail при честном тесте (focus-trap library не добавлена, OS reduced-motion not respected без runtime check).
+
+Blocked tests требуют либо реального браузера (network throttling, OS reduced-motion, mobile viewport, focus-trap library), либо real-world test phone от owner (T13 only). Не блокируют local prototype, но **блокируют production deploy** и **measurable revenue Δ**.
 
 ## Open follow-ups
 
