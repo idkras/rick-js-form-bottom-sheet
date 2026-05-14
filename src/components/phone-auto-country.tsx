@@ -120,22 +120,25 @@ export interface PhoneStatus {
   labelLine: string
 }
 
-/** Compose the single-line label per state. Owner directive 2026-05-14 (v2):
- *  - Prefix changed: "Phone number" → "Work phone or messenger" (covers WhatsApp/Telegram intent)
- *  - P4 unknown shortened: "country unknown, double-check? We'll still call you" → "{dial}, double-check?"
+/** Compose the single-line label per state. Owner directive 2026-05-14 (v3):
+ *  «милый текст из которого понятно, что пользователь мог не дописать»
+ *  - "+39 Italy, right" → "+39 it is Italy" (gentle confirmation, no interrogative)
+ *  - "Looks good" → "Looks good!" (encouraging exclamation)
+ *  - "double-check?" / "Keep typing?" → "keep typing!" / "let's keep going" (no question marks)
+ *  - All warnings are non-blocking — user can submit anyway, the form is forgiving
  */
 const PREFIX = "Work phone or messenger"
 
 function composeLabelLine(s: Omit<PhoneStatus, "labelLine">): string {
   if (s.kind === "empty") return PREFIX
-  if (s.kind === "typing-code") return `${PREFIX} · 🌐 detecting…`
-  if (s.kind === "unknown-code") return `${PREFIX} · ${s.dial}, double-check?`
+  if (s.kind === "typing-code") return `${PREFIX} · 🌐 catching your country…`
+  if (s.kind === "unknown-code") return `${PREFIX} · ${s.dial} — let's keep typing, maybe more digits help!`
   // Ambiguous +1 — short hint about Canada/Caribbean inline.
   const ambiguousNote = s.dial === "+1" ? " (or Canada)" : ""
-  const base = `${PREFIX} · ${s.flag} ${s.dial} ${s.name}${ambiguousNote}, right`
-  if (s.kind === "short") return `${base}. Keep typing?`
-  if (s.kind === "valid") return `${base}. Looks good`
-  return base // recognized
+  const base = `${PREFIX} · ${s.flag} ${s.dial} it is ${s.name}${ambiguousNote}`
+  if (s.kind === "short") return `${base}. Keep typing!`
+  if (s.kind === "valid") return `${base}. Looks good!`
+  return base // recognized — just country confirmation, no extra
 }
 
 // Resolve country from raw input. Longest-prefix match.
