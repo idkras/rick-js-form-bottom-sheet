@@ -109,6 +109,46 @@
   display: inline-block;
 }
 
+// Hover tooltip pinned above chip (typhoon offers — pricing hint)
+.chipTooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%) translateY(2px);
+  padding: 6px 10px;
+  background: #0a0a0c;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.3;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 140ms ease, transform 140ms ease;
+  z-index: 10;
+
+  // Caret arrow underneath tooltip
+  &::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: #0a0a0c;
+  }
+}
+
+.chip:hover .chipTooltip,
+.chipSelected:hover .chipTooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+// Position chips relative so tooltip can absolute against
+%chipBase { position: relative; }
+
 @media (prefers-reduced-motion: reduce) {
   .chip, .chipSelected {
     transition: background-color 160ms ease, color 160ms ease;

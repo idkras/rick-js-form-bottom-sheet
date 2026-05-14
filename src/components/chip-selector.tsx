@@ -12,6 +12,7 @@ import styles from "./chip-selector.module.scss"
 export interface ChipOption {
   value: string
   label: string
+  tooltip?: string  // optional pricing/copy hint shown on hover (typhoon offers)
 }
 
 interface ChipSelectorProps {
@@ -57,9 +58,11 @@ export function ChipSelector({
               data-name={name}
               className={selected ? styles.chipSelected : styles.chip}
               onClick={() => onChange(opt.value)}
+              title={opt.tooltip}
             >
               {selected ? <CheckIcon className={styles.checkIcon} /> : null}
               <span className={styles.chipLabel}>{opt.label}</span>
+              {opt.tooltip ? <span className={styles.chipTooltip}>{opt.tooltip}</span> : null}
             </button>
           )
         })}

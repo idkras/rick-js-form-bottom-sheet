@@ -28,16 +28,16 @@ const STATUS_OPTIONS: ChipOption[] = [
 ]
 
 // Typhoon roaster line maps directly to weekly volume buckets.
-// Source: [rick.ai]/clients/all-clients/typhoon-coffee/knowledge-base/
-//   sales-scripts-positioning-audit-2026-02-25/raw/.../offers-prices.tsv
+// Tooltips pull pricing from offers-prices.tsv (typhoon-roasters-sales-sheet-2026-02-25):
+//   Typhoon 2.5 PRO €19 500 · 5 PRO €26 900 · 10 PRO €37 500 · 20 electro €48 000 · 30 electro €68 000.
 // Approx cups/kg = 100 (1 espresso ~10g, 1 v60 ~15g — рознично-усреднённо).
 const KG_OPTIONS: ChipOption[] = [
-  { value: "<5 kg/week", label: "<5 kg/week" },
-  { value: "5-20 kg/week", label: "5-20 kg/week" },
-  { value: "20-50 kg/week", label: "20-50 kg/week" },
-  { value: "50-150 kg/week", label: "50-150 kg/week" },
-  { value: "150+ kg/week", label: "150+ kg/week" },
-  { value: "Not sure yet", label: "Not sure yet" },
+  { value: "<5 kg/week", label: "<5 kg/week", tooltip: "Typhoon 2.5 PRO · ~€19 500 · 1 kg/batch" },
+  { value: "5-20 kg/week", label: "5-20 kg/week", tooltip: "Typhoon 5 PRO · ~€26 900 · 5 kg/batch" },
+  { value: "20-50 kg/week", label: "20-50 kg/week", tooltip: "Typhoon 10 PRO · ~€37 500 · 10 kg/batch" },
+  { value: "50-150 kg/week", label: "50-150 kg/week", tooltip: "Typhoon 20 electro · ~€48 000 · 20 kg/batch" },
+  { value: "150+ kg/week", label: "150+ kg/week", tooltip: "Typhoon 30 electro · ~€68 000 · 30 kg/batch" },
+  { value: "Not sure yet", label: "Not sure yet", tooltip: "We'll suggest the right size on the call" },
 ]
 
 export function TyphoonContactForm({ onSubmit }: RickFormContentProps) {
