@@ -243,27 +243,36 @@ export function PhoneAutoCountry({
       data-verdict={status.verdict}
       data-focused={focused ? "true" : "false"}
     >
+      {/* Header row: label left, badge + hint stacked right (owner directive
+          2026-05-14 «hint в надзаголовке справа, не нужна иконка ⚠ / ✓ —
+          цвет бейджа сам коммуницирует статус»). */}
       <div className={styles.headerRow}>
         <label htmlFor={`${reactId}-num`} className={styles.label}>
           {label}
         </label>
-        {status.kind !== "empty" ? (
-          <span
-            className={styles.badge}
-            data-verdict={status.verdict}
-            aria-live="polite"
-          >
-            <span className={styles.flag} aria-hidden="true">{status.flag}</span>
-            <span className={styles.dial}>{status.dial}</span>
-            {status.name ? <span className={styles.dot} aria-hidden="true">·</span> : null}
-            {status.name ? <span className={styles.name}>{status.name}</span> : null}
-            {status.verdict === "ok" ? (
-              <span className={styles.tick} aria-label="recognized">✓</span>
-            ) : status.verdict === "warn" ? (
-              <span className={styles.warn} aria-label="check">⚠</span>
-            ) : null}
-          </span>
-        ) : null}
+        <div className={styles.meta}>
+          {status.kind !== "empty" ? (
+            <span
+              className={styles.badge}
+              data-verdict={status.verdict}
+              aria-live="polite"
+            >
+              <span className={styles.flag} aria-hidden="true">{status.flag}</span>
+              <span className={styles.dial}>{status.dial}</span>
+              {status.name ? <span className={styles.dot} aria-hidden="true">·</span> : null}
+              {status.name ? <span className={styles.name}>{status.name}</span> : null}
+            </span>
+          ) : null}
+          {status.hint ? (
+            <span
+              id={`${reactId}-hint`}
+              className={styles.metaHint}
+              data-verdict={status.verdict}
+            >
+              {status.hint}
+            </span>
+          ) : null}
+        </div>
       </div>
       <input
         id={`${reactId}-num`}
@@ -279,11 +288,6 @@ export function PhoneAutoCountry({
         placeholder={placeholder}
         aria-describedby={status.hint ? `${reactId}-hint` : undefined}
       />
-      {status.hint ? (
-        <p id={`${reactId}-hint`} className={styles.hint} data-verdict={status.verdict}>
-          {status.hint}
-        </p>
-      ) : null}
     </div>
   )
 }
