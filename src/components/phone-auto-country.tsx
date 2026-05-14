@@ -120,16 +120,19 @@ export interface PhoneStatus {
   labelLine: string
 }
 
-/** Compose the single-line label per state. Owner directive 2026-05-14:
- *  «в 1 строчку — Phone number · +39 Italy, right. Keep typing?»
+/** Compose the single-line label per state. Owner directive 2026-05-14 (v2):
+ *  - Prefix changed: "Phone number" → "Work phone or messenger" (covers WhatsApp/Telegram intent)
+ *  - P4 unknown shortened: "country unknown, double-check? We'll still call you" → "{dial}, double-check?"
  */
+const PREFIX = "Work phone or messenger"
+
 function composeLabelLine(s: Omit<PhoneStatus, "labelLine">): string {
-  if (s.kind === "empty") return "Phone number to reach you"
-  if (s.kind === "typing-code") return "Phone number · 🌐 detecting your country…"
-  if (s.kind === "unknown-code") return `Phone number · ${s.dial} country unknown, double-check?`
-  // For ambiguous +1, hint about Canada/Caribbean handled inline.
-  const ambiguousNote = s.dial === "+1" ? " (or Canada — same code)" : ""
-  const base = `Phone number · ${s.flag} ${s.dial} ${s.name}${ambiguousNote}, right`
+  if (s.kind === "empty") return PREFIX
+  if (s.kind === "typing-code") return `${PREFIX} · 🌐 detecting…`
+  if (s.kind === "unknown-code") return `${PREFIX} · ${s.dial}, double-check?`
+  // Ambiguous +1 — short hint about Canada/Caribbean inline.
+  const ambiguousNote = s.dial === "+1" ? " (or Canada)" : ""
+  const base = `${PREFIX} · ${s.flag} ${s.dial} ${s.name}${ambiguousNote}, right`
   if (s.kind === "short") return `${base}. Keep typing?`
   if (s.kind === "valid") return `${base}. Looks good`
   return base // recognized
