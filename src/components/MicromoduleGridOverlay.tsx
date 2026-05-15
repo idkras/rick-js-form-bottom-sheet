@@ -25,8 +25,8 @@ export function MicromoduleGridOverlay({
   show,
   size = 12,
   color = "#2196F3",
-  opacity = 30,
-  showMajor = true,
+  opacity = 15, // owner correction 15 May 2026: 30 «слишком синяя» → 15 default
+  showMajor = false, // major lines off by default to reduce visual noise
   axis = "both",
   zIndex = 2147483500,
 }: MicromoduleGridOverlayProps) {

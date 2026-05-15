@@ -27,10 +27,11 @@ export function OverlayApp() {
   const [injector] = useState(() => new DocumentInjector(document, RickForm))
 
   // Micromodule grid overlay state — per Standard 4.19 §5.1
+  // Owner correction 15 May 2026: opacity 30 «слишком синяя» → default 15
   const [gridShow, setGridShow] = useState(false)
   const [gridSize, setGridSize] = useState(12)
   const [gridColor, setGridColor] = useState("#2196F3")
-  const [gridOpacity, setGridOpacity] = useState(30)
+  const [gridOpacity, setGridOpacity] = useState(15)
 
   useQuadClick(useCallback(() => setPanelVisible((v) => !v), []))
 
