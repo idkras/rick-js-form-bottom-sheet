@@ -20,6 +20,15 @@ interface FeatureFlagPanelProps {
   onClose: () => void
   client: string
   epicId: string
+  // Micromodule grid overlay (per Standard 4.19)
+  gridShow: boolean
+  gridSize: number
+  gridColor: string
+  gridOpacity: number
+  onGridToggle: () => void
+  onGridSizeChange: (size: number) => void
+  onGridColorChange: (color: string) => void
+  onGridOpacityChange: (opacity: number) => void
 }
 
 export function FeatureFlagPanel({
@@ -29,7 +38,16 @@ export function FeatureFlagPanel({
   onClose,
   client,
   epicId,
+  gridShow,
+  gridSize,
+  gridColor,
+  gridOpacity,
+  onGridToggle,
+  onGridSizeChange,
+  onGridColorChange,
+  onGridOpacityChange,
 }: FeatureFlagPanelProps) {
+  const [gridOpen, setGridOpen] = useState(false)
   const [comment, setComment] = useState("")
   const [entries, setEntries] = useState<FeedbackEntry[]>(() => loadFeedback())
   const [feedbackOpen, setFeedbackOpen] = useState(false)
@@ -97,6 +115,82 @@ export function FeatureFlagPanel({
           ×
         </button>
       </div>
+
+      {/* Grid overlay pill — per Standard 4.19 Micromodular Typography Grid */}
+      <div className={styles.pill} data-grid-pill>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={gridShow}
+          aria-label="Show micromodule grid overlay"
+          data-state={gridShow ? "on" : "off"}
+          className={styles.switch}
+          onClick={onGridToggle}
+        >
+          <span className={styles.knob} />
+        </button>
+        <span className={styles.label} title="Show 12px micromodular grid overlay (Standard 4.19)">
+          Grid {gridShow ? "вкл" : "выкл"}
+        </span>
+        <button
+          type="button"
+          className={styles.iconBtn}
+          onClick={() => setGridOpen((v) => !v)}
+          aria-label={gridOpen ? "Close grid settings" : "Open grid settings"}
+          aria-expanded={gridOpen}
+          disabled={!gridShow}
+          style={!gridShow ? { opacity: 0.4 } : undefined}
+        >
+          {gridOpen ? "−" : "⚙"}
+        </button>
+      </div>
+
+      {gridOpen && gridShow ? (
+        <div className={styles.feedbackPopover}>
+          <label className={styles.gridRow}>
+            <span className={styles.gridRowLabel}>Size</span>
+            <input
+              type="number"
+              min={4}
+              max={48}
+              step={2}
+              value={gridSize}
+              onChange={(e) => onGridSizeChange(Number(e.target.value))}
+              className={styles.gridNumberInput}
+            />
+            <span className={styles.gridUnit}>px</span>
+          </label>
+          <label className={styles.gridRow}>
+            <span className={styles.gridRowLabel}>Color</span>
+            <input
+              type="color"
+              value={gridColor}
+              onChange={(e) => onGridColorChange(e.target.value)}
+              className={styles.gridColorInput}
+            />
+            <input
+              type="text"
+              value={gridColor}
+              onChange={(e) => onGridColorChange(e.target.value)}
+              pattern="^#[0-9A-Fa-f]{6}$"
+              className={styles.gridHexInput}
+            />
+          </label>
+          <label className={styles.gridRow}>
+            <span className={styles.gridRowLabel}>Opacity</span>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              step={5}
+              value={gridOpacity}
+              onChange={(e) => onGridOpacityChange(Number(e.target.value))}
+              className={styles.gridSlider}
+            />
+            <span className={styles.gridUnit}>{gridOpacity}%</span>
+          </label>
+        </div>
+      ) : null}
 
       {feedbackOpen ? (
         <div className={styles.feedbackPopover}>

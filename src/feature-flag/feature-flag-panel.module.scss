@@ -200,6 +200,77 @@
   }
 }
 
+// Grid pill controls — per Standard 4.19 §5.2 + RCA 2026-05-15 owner-saw-bullshit
+.gridRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #f3f3f5;
+}
+
+.gridRowLabel {
+  flex-shrink: 0;
+  width: 50px;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.gridNumberInput, .gridHexInput {
+  flex: 1;
+  min-width: 0;
+  font-family: inherit;
+  font-size: 11px;
+  background: #0f0f12;
+  color: #f3f3f5;
+  border: 1px solid #2a2a32;
+  border-radius: 6px;
+  padding: 4px 6px;
+  outline: none;
+
+  &:focus { border-color: #5b6cff; }
+}
+
+.gridHexInput { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+.gridColorInput {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid #2a2a32;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.gridSlider {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+  accent-color: #5b6cff;
+}
+
+.gridUnit {
+  flex-shrink: 0;
+  font-size: 10px;
+  color: #6b7280;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  min-width: 28px;
+  text-align: right;
+}
+
+// Agentation panel positioning — to the LEFT of RickForm pill (Standard 4.19 §6.1)
+// Per owner directive 15 May 2026: «панелька agentation.dev слева от нашей панельки»
+:global([data-agentation-toolbar]),
+:global(.agentation-toolbar),
+:global([class*="agentation"][class*="toolbar"]) {
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 264px !important; // 16 (panel right) + ~220 panel width + 28 gap = 264
+  z-index: 2147483599 !important; // just below RickForm panel
+}
+
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
@@ -207,5 +278,5 @@
 
 @media (prefers-reduced-motion: reduce) {
   .pillWrap { animation: none; }
-  .switch, .knob, .feedbackInput, .iconBtn, .primaryBtn { transition: none; }
+  .switch, .knob, .feedbackInput, .iconBtn, .primaryBtn, .gridNumberInput, .gridHexInput, .gridSlider { transition: none; }
 }
