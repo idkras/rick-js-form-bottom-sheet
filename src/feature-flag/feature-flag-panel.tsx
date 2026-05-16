@@ -134,11 +134,11 @@ export function FeatureFlagPanel({
           >
             <span className={styles.knob} />
           </button>
-          <span className={styles.flagLabel} title="Hover for settings — micromodular 12px grid per Standard 4.19">
+          <span className={styles.flagLabel} title="Micromodular 12px grid overlay per Standard 4.19 — settings appear when ON">
             Grid {gridShow ? "вкл" : "выкл"}
           </span>
 
-          {/* Inline settings — visible on row hover via CSS, only when grid is ON */}
+          {/* Inline settings — sticky visible whenever grid is ON (no hover gating, RCA 2026-05-16) */}
           {gridShow && (
             <div className={styles.inlineSettings}>
               <label className={styles.settingsCell}>

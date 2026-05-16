@@ -82,19 +82,25 @@
   &:hover { background: rgba(255, 255, 255, 0.04); }
 }
 
+// Inline settings: STICKY visible when rendered (parent renders them only when
+// flag is ON via {gridShow && ...}). Owner correction 2026-05-16: hover-only
+// gating was a promax bug — settings vanished on mouse-leave + invisible until
+// exact-pixel hover. 3 subagents (a11y BLOCK #4, design #7, frontend #2) + owner
+// flagged. Fix: sticky-when-ON, no hover requirement. Hover/focus add affordance.
 .flagRowWithHover {
-  // Inline settings hidden by default — revealed on row hover OR when flag is active
   .inlineSettings {
-    display: none;
+    display: flex;          // sticky — visible whenever flag ON (parent-gated)
     margin-left: auto;
     align-items: center;
     gap: 6px;
   }
 
-  &:hover .inlineSettings { display: flex; }
+  // Hover/focus = visual emphasis only (background), settings already visible
+  &:hover .inlineSettings,
+  &:focus-within .inlineSettings { display: flex; }
 }
 
-// Always show settings when row is focused-within (keyboard a11y)
+// Keyboard a11y — settings reachable on focus-within (already visible, kept explicit)
 .flagRow:focus-within .inlineSettings { display: flex !important; }
 
 .switch {
@@ -185,7 +191,7 @@
 
 // Inline settings — on row hover
 .inlineSettings {
-  display: flex;       // overridden to none in .flagRowWithHover
+  display: flex;       // sticky — parent renders only when flag ON
   align-items: center;
   gap: 6px;
 }
