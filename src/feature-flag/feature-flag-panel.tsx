@@ -58,6 +58,42 @@ export function FeatureFlagPanel({
     if (feedbackOpen && textareaRef.current) textareaRef.current.focus()
   }, [feedbackOpen])
 
+  // Figma-style opacity hotkey (owner 2026-05-16): grid ON → digit keys set
+  // opacity. Single `0` = 100% (Figma convention), `5` = 50%, `1` = 10%,
+  // two digits within 500ms = exact (`2`+`5` → 25%). Ignored while typing
+  // in an input/textarea/select so it never hijacks normal field editing.
+  useEffect(() => {
+    if (!gridShow) return
+    let buf = ""
+    let timer: ReturnType<typeof setTimeout> | undefined
+
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null
+      const tag = t?.tagName
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || t?.isContentEditable) return
+      if (!/^[0-9]$/.test(e.key)) return
+      e.preventDefault()
+      buf += e.key
+      if (timer) clearTimeout(timer)
+      timer = setTimeout(() => {
+        // Figma convention: single non-zero digit d → d*10 (5→50, 1→10, 9→90);
+        // single 0 → 100; two digits → exact (2,5 → 25). Clamp 0..100.
+        let next: number
+        if (buf === "0") next = 100
+        else if (buf.length === 1) next = parseInt(buf, 10) * 10
+        else next = Math.max(0, Math.min(100, parseInt(buf, 10)))
+        onGridOpacityChange(next)
+        buf = ""
+      }, 450)
+    }
+
+    document.addEventListener("keydown", onKey, true)
+    return () => {
+      document.removeEventListener("keydown", onKey, true)
+      if (timer) clearTimeout(timer)
+    }
+  }, [gridShow, onGridOpacityChange])
+
   if (!visible) return null
 
   const handleSaveFeedback = () => {
@@ -162,19 +198,24 @@ export function FeatureFlagPanel({
                   aria-label="Grid color"
                 />
               </label>
-              <label className={styles.settingsCell}>
+              <label
+                className={styles.settingsCell}
+                title="Opacity %. Hotkey (Figma-style): point at page, press digits — 5=50%, 0=100%, 2 then 5=25%"
+              >
                 <span className={styles.settingsLabel}>α</span>
                 <input
-                  type="range"
+                  type="number"
                   min={0}
                   max={100}
                   step={5}
                   value={gridOpacity}
-                  onChange={(e) => onGridOpacityChange(Number(e.target.value))}
-                  className={styles.slider}
-                  aria-label={`Opacity ${gridOpacity}%`}
+                  onChange={(e) =>
+                    onGridOpacityChange(Math.max(0, Math.min(100, Number(e.target.value))))
+                  }
+                  className={styles.numberInput}
+                  aria-label="Grid opacity percent"
                 />
-                <span className={styles.settingsUnit}>{gridOpacity}%</span>
+                <span className={styles.settingsUnit}>%</span>
               </label>
             </div>
           )}
