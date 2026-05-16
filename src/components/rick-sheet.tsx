@@ -109,32 +109,62 @@ export function RickSheet({
       }}
       role="presentation"
     >
-      <div
-        ref={sheetRef}
-        className={resolved === "sheet" ? styles.sheet : styles.popup}
-        role="dialog"
-        aria-modal="true"
-        aria-label={title ?? "Form"}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-      >
-        {resolved === "sheet" ? (
-          <div className={styles.grabber} aria-hidden="true" />
-        ) : null}
-        <div className={styles.header}>
-          {title ? <h2 className={styles.title}>{title}</h2> : <span />}
-          <button
-            type="button"
-            className={styles.closeBtn}
-            onClick={onClose}
-            aria-label="Close"
+      {resolved === "sheet" ? (
+        // Sheet mode: grabber (———) + close control live ABOVE the white sheet,
+        // on the dark overlay, grid-aligned (Standard 4.19). Owner 2026-05-16:
+        // «крестик и ——— показывать не на язычке, а над ним по сетке».
+        <div className={styles.sheetWrap}>
+          <div className={styles.sheetTopBar}>
+            <div className={styles.grabber} aria-hidden="true" />
+            <button
+              type="button"
+              className={styles.topCloseRow}
+              onClick={onClose}
+              aria-label="Close"
+            >
+              <span className={styles.topCloseLabel}>close</span>
+              <CloseIcon />
+            </button>
+          </div>
+          <div
+            ref={sheetRef}
+            className={styles.sheet}
+            role="dialog"
+            aria-modal="true"
+            aria-label={title ?? "Form"}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
           >
-            <CloseIcon />
-          </button>
+            <div className={styles.header}>
+              {title ? <h2 className={styles.title}>{title}</h2> : <span />}
+            </div>
+            <div className={styles.body}>{children}</div>
+          </div>
         </div>
-        <div className={styles.body}>{children}</div>
-      </div>
+      ) : (
+        // Popup mode (desktop, no язычок): × stays inside header.
+        <div
+          ref={sheetRef}
+          className={styles.popup}
+          role="dialog"
+          aria-modal="true"
+          aria-label={title ?? "Form"}
+        >
+          <div className={styles.header}>
+            {title ? <h2 className={styles.title}>{title}</h2> : <span />}
+            <button
+              type="button"
+              className={styles.closeBtn}
+              onClick={onClose}
+              aria-label="Close"
+            >
+              <CloseIcon />
+            </button>
+          </div>
+          <div className={styles.body}>{children}</div>
+        </div>
+      )}
     </div>
   )
 }

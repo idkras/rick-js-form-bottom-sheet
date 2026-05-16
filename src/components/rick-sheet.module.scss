@@ -15,8 +15,9 @@
 }
 
 .overlay[data-mode="sheet"] {
-  align-items: flex-end;
-  justify-content: stretch;
+  flex-direction: column;
+  justify-content: flex-end; // sheetWrap (topBar + white sheet) прижат к низу
+  align-items: stretch;
   padding: 0;
 }
 
@@ -42,17 +43,66 @@
   display: flex;
   flex-direction: column;
   touch-action: pan-y;
-  animation: sheetIn 0.22s ease;
+  transform: translateY(0); // base pinned; slide-in анимация на .sheetWrap, drag на этом элементе
   transition: transform 0.16s ease;
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+// Sheet wrap: column — topBar (на тёмной зоне, над язычком) + white sheet снизу.
+.sheetWrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  // Без entrance keyframe: после restructure sheetIn translateY(100%) стакался
+  // (continuous re-render рестартил 0.22s → залипал в from-state). Мягкое
+  // появление даёт overlay fadeIn + backdrop. drag-to-close — на .sheet.
+}
+
+// Top bar ABOVE the white sheet, on dark overlay, grid-aligned (Standard 4.19).
+// Height 48px = 4×12. grabber centered, close-row right. Owner 2026-05-16.
+.sheetTopBar {
+  position: relative;
+  height: 48px;
+  padding: 0 24px; // 2×12
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .grabber {
-  width: 40px;
+  width: 48px;     // 4×12
   height: 4px;
   border-radius: 2px;
-  background: #d1d5db;
-  margin: 10px auto 0;
+  background: rgba(255, 255, 255, 0.55); // off-white on dark (no pure #fff — HC1)
+}
+
+// Close control: gray "close" word LEFT of × icon, right-aligned.
+.topCloseRow {
+  position: absolute;
+  right: 12px;     // 1×12
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;        // 0.5×12 sub-rhythm
+  background: transparent;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.62); // gray-on-dark, off-white (HC1)
+  transition: color 0.16s ease, background-color 0.16s ease;
+
+  &:hover { color: rgba(255, 255, 255, 0.92); background: rgba(255, 255, 255, 0.1); }
+  &:focus-visible { outline: 2px solid rgba(255, 255, 255, 0.8); outline-offset: 2px; }
+}
+
+.topCloseLabel {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: inherit; // gray, follows .topCloseRow color
+  user-select: none;
 }
 
 .header {
@@ -95,5 +145,5 @@
 @keyframes sheetIn { from { transform: translateY(100%) } to { transform: translateY(0) } }
 
 @media (prefers-reduced-motion: reduce) {
-  .overlay, .popup, .sheet { animation: none; transition: none; }
+  .overlay, .popup, .sheet, .sheetWrap { animation: none; transition: none; }
 }
