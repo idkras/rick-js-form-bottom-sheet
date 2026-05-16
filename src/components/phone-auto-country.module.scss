@@ -6,11 +6,14 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 6px;                       // 3-grid
+  justify-content: center;        // label+input optically centered в 48px блоке
+  gap: 2px;
+  min-height: 48px;               // 4×12 micromodule (Standard 4.19, owner 2026-05-16)
+  box-sizing: border-box;         // border included в 48 (block alignment, не baseline)
   border: 1px solid #d1d5db;
-  border-radius: 12px;            // 3-grid
+  border-radius: 12px;            // 1×12
   background: #ffffff;
-  padding: 9px 15px 12px 15px;    // 3-grid (was 6 14 8 14)
+  padding: 0 12px;                // 1×12 horizontal; vertical = 0 (height-driven, centered)
   transition:
     border-color 180ms ease,
     box-shadow 180ms ease,
@@ -64,7 +67,7 @@
   font-size: 18px;                // bumped (was 16) for mobile thumb-typing
   font-weight: 500;
   color: #0a0a0c;
-  padding: 6px 0;                 // 3-grid
+  padding: 0;                     // height-driven by .wrap min-height:48 (4×12)
   outline: none;
   letter-spacing: 0.01em;
   width: 100%;
